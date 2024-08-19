@@ -1,0 +1,38 @@
+# Node.js
+node_modules/
+npm-debug.log
+yarn-error.log
+package-lock.json
+.pnpm-debug.log
+
+# Logs
+logs
+*.log
+logs/*.log
+
+# Diretórios de build
+dist/
+build/
+
+# Diretórios temporários
+tmp/
+temp/
+
+# Diretórios de teste
+coverage/
+*.lcov
+
+# Diretórios de configuração de ambiente
+.env
+.env.local
+.env.*.local
+
+# Diretórios do sistema operacional
+.DS_Store
+Thumbs.db
+
+# IDEs/Editors
+.vscode/
+.idea/
+*.sublime-project
+*.sublime-workspace
