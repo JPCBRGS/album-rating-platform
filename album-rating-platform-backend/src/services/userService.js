@@ -1,5 +1,6 @@
 const bcrypt = require('bcrypt');
-const { PrismaClient } = require('@prisma/client')
+const { PrismaClient } = require('@prisma/client');
+const prisma = new PrismaClient(); // Criação da instância do Prisma Client
 
 const saltRounds = 10;
 
@@ -18,7 +19,7 @@ async function createUser(username, email, password) {
 }
 
 async function verifyUserPassword(email, password) {
-  const user = await PrismaClient.user.findUnique({
+  const user = await prisma.user.findUnique({
     where: { email: email }
   });
 
