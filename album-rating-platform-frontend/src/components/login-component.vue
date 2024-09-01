@@ -1,4 +1,3 @@
-<!-- src/components/login-component.vue -->
 <template>
   <div class="login-container">
     <div class="login-form">
@@ -12,9 +11,9 @@
           <label for="password">Password:</label>
           <input type="password" v-model="password" id="password" required />
         </div>
-        <ButtonComponent type="submit" :loading="loading" text="Login" />
+        <ButtonComponent type="submit" :loading="loading" text="Login" class="login-button" />
         <p v-if="errorMessage" class="error">{{ errorMessage }}</p>
-        <ButtonComponent type="button" @click="goToRegister" text="Register" />
+        <ButtonComponent type="button" @click="goToRegister" text="Register" class="register-button" />
       </form>
     </div>
   </div>
@@ -136,5 +135,10 @@ input:focus {
 .error {
   color: red;
   margin-top: 1rem;
+}
+
+/* Adiciona espaço entre os botões */
+.login-button {
+  margin-bottom: 20px;
 }
 </style>
