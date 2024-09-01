@@ -13,7 +13,6 @@
     methods: {
       logout() {
         // Remove a autenticação do usuário
-        localStorage.removeItem('authToken');
         localStorage.removeItem('isLoggedIn');
         
         // Redireciona para a página de login

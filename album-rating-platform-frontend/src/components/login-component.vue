@@ -52,7 +52,6 @@ export default {
 
         const result = await response.json();
         if (response.ok) {
-          localStorage.setItem('authToken', result.token);
           localStorage.setItem('isLoggedIn', 'true');
           this.$router.push('/main'); // Redireciona para a página principal
         } else {

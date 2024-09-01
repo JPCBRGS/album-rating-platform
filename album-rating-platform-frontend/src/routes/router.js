@@ -6,7 +6,6 @@ import MainPageComponent from '../components/main-page-component.vue';
 
 // Simulação de verificação de login
 function isLoggedIn() {
-  // Aqui você pode implementar uma lógica real, como verificar um token no localStorage ou em um estado global
   return localStorage.getItem('isLoggedIn') === 'true';
 }
 
