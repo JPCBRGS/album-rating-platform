@@ -12,19 +12,22 @@
           <label for="password">Password:</label>
           <input type="password" v-model="password" id="password" required />
         </div>
-        <button type="submit" :disabled="loading" class="submit-button">
-          <span v-if="loading">Logging in...</span>
-          <span v-else>Login</span>
-        </button>
+        <ButtonComponent type="submit" :loading="loading" text="Login" />
         <p v-if="errorMessage" class="error">{{ errorMessage }}</p>
+        <ButtonComponent type="button" @click="goToRegister" text="Register" />
       </form>
     </div>
   </div>
 </template>
 
 <script>
+import ButtonComponent from './button-component.vue';
+
 export default {
   name: 'login-component',
+  components: {
+    ButtonComponent
+  },
   data() {
     return {
       email: '',
@@ -62,6 +65,9 @@ export default {
       } finally {
         this.loading = false;
       }
+    },
+    goToRegister() {
+      this.$router.push('/register'); // Redireciona para a página de registro
     }
   }
 }
@@ -125,26 +131,6 @@ input {
 input:focus {
   border-color: #4f7dff;
   outline: none;
-}
-
-.submit-button {
-  background: #4f7dff;
-  color: white;
-  padding: 0.75rem 1.5rem;
-  border: none;
-  border-radius: 4px;
-  font-size: 1rem;
-  cursor: pointer;
-  transition: background 0.3s ease;
-}
-
-.submit-button:hover {
-  background: #2a56d4;
-}
-
-.submit-button:disabled {
-  background: #aab0b7;
-  cursor: not-allowed;
 }
 
 .error {
