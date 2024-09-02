@@ -1,3 +1,5 @@
+// routes/userRoutes.js
+
 const express = require('express');
 const router = express.Router();
 const userService = require('../services/userService');
@@ -27,6 +29,18 @@ router.post('/login', async (req, res) => {
     }
   } catch (error) {
     res.status(500).json({ error: 'Failed to login' });
+  }
+});
+
+// Endpoint para atualizar usuário
+router.put('/update', async (req, res) => {
+  const { email, newUsername, newEmail, newPassword } = req.body;
+
+  try {
+    const updatedUser = await userService.updateUser(email, newUsername, newEmail, newPassword);
+    res.status(200).json(updatedUser);
+  } catch (error) {
+    res.status(500).json({ error: error.message });
   }
 });
 

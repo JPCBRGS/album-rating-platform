@@ -1,6 +1,8 @@
+// services/userService.js
+
 const bcrypt = require('bcrypt');
 const { PrismaClient } = require('@prisma/client');
-const prisma = new PrismaClient(); // Criação da instância do Prisma Client
+const prisma = new PrismaClient();
 
 const saltRounds = 10;
 
@@ -30,7 +32,34 @@ async function verifyUserPassword(email, password) {
   }
 }
 
+async function updateUser(email, newUsername, newEmail, newPassword) {
+  const user = await prisma.user.findUnique({
+    where: { email: email }
+  });
+
+  if (!user) {
+    throw new Error('User not found');
+  }
+
+  const updatedData = {
+    username: newUsername || user.username,
+    email: newEmail || user.email,
+  };
+
+  if (newPassword) {
+    updatedData.password = await bcrypt.hash(newPassword, saltRounds);
+  }
+
+  const updatedUser = await prisma.user.update({
+    where: { email: email },
+    data: updatedData
+  });
+
+  return updatedUser;
+}
+
 module.exports = {
   createUser,
-  verifyUserPassword
+  verifyUserPassword,
+  updateUser
 };
