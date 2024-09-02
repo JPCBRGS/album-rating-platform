@@ -2,32 +2,74 @@
   <div class="main-page">
     <menu-bar-component />
     <div class="content">
-      <input type="text" placeholder="Search albums..." v-model="searchQuery" @keyup.enter="searchAlbums" class="search-box" />
+      <input
+        type="text"
+        placeholder="Search albums..."
+        v-model="searchQuery"
+        @input="debouncedSearch"
+        class="search-box"
+      />
+      <div class="album-list">
+        <div class="album" v-for="album in albums" :key="album.id">
+          <img
+            :src="album.images[0]?.url"
+            alt="album cover"
+            class="album-cover"
+          />
+          <p>{{ album.name }}</p>
+        </div>
+      </div>
     </div>
   </div>
 </template>
 
 <script>
 import MenuBarComponent from './menu-bar-component.vue';
+import _ from 'lodash';
 
 export default {
   name: 'main-page-component',
   components: {
-    MenuBarComponent
+    MenuBarComponent,
   },
   data() {
     return {
-      searchQuery: ''
+      searchQuery: '',
+      albums: [],
     };
   },
   methods: {
     searchAlbums() {
-      // Implement the logic to search albums based on searchQuery
-      console.log('Searching for:', this.searchQuery);
-      // You might want to call an API to fetch the search results here
-    }
-  }
-}
+      if (!this.searchQuery) return; // Não busca se o campo de pesquisa estiver vazio
+      this.fetchAlbums(this.searchQuery);
+    },
+    fetchAlbums(query) {
+      const url = `http://localhost:3000/spotify/search-albums?query=${encodeURIComponent(
+        query
+      )}`;
+      fetch(url, {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      })
+        .then((response) => {
+          if (!response.ok) throw new Error('Failed to fetch');
+          return response.json();
+        })
+        .then((data) => {
+          this.albums = data; // Atualiza o array de álbuns com a resposta
+        })
+        .catch((error) => {
+          console.error('Error fetching albums:', error);
+          this.albums = []; // Limpa a lista se houver erro
+        });
+    },
+    debouncedSearch: _.debounce(function () {
+      this.searchAlbums();
+    }, 300), // Debounce para reduzir chamadas à API
+  },
+};
 </script>
 
 <style scoped>
@@ -39,10 +81,10 @@ export default {
 
 .content {
   display: flex;
-  justify-content: center;
+  flex-direction: column;
+  align-items: center;
   margin-top: 40px;
-  align-items: flex-start;
-  flex-grow: 1;
+  width: 100%;
 }
 
 .search-box {
@@ -57,10 +99,33 @@ export default {
   background: white;
 }
 
-button {
+.album-list {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+  gap: 20px;
   margin-top: 20px;
-  padding: 10px 20px;
-  font-size: 16px;
-  cursor: pointer;
+  width: 100%;
+  max-width: 1000px;
+}
+
+.album {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+}
+
+.album-cover {
+  width: 150px;
+  height: 150px;
+  object-fit: cover;
+  border-radius: 10px;
+  margin-bottom: 10px;
+}
+
+p {
+  font-size: 14px;
+  font-weight: bold;
+  color: #333;
 }
 </style>
