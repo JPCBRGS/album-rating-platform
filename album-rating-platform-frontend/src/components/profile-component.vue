@@ -51,37 +51,63 @@ export default {
   },
   methods: {
     async loadProfile() {
-      // Carregar informações do perfil do usuário
-      // Substitua com a lógica real para obter os dados do perfil
-      this.username = 'JohnDoe';
-      this.email = 'john.doe@example.com';
-      this.password = '********'; // Não mostre a senha real
+      try {
+        const email = localStorage.getItem('email'); // Recupera o email do localStorage
+        if (!email) {
+          alert('No user is logged in');
+          return;
+        }
+
+        const response = await fetch(`http://localhost:3000/users/profile?email=${encodeURIComponent(email)}`, {
+          method: 'GET',
+          headers: {
+            'Content-Type': 'application/json'
+          }
+        });
+
+        if (response.ok) {
+          const data = await response.json();
+          this.username = data.username;
+          this.email = data.email;
+          // Não mostre a senha real; você pode optar por mostrar a senha como asteriscos ou algo semelhante
+          this.password = '********';
+        } else {
+          alert('Failed to load profile');
+        }
+      } catch (error) {
+        console.error('Error loading profile:', error);
+        alert('Failed to load profile');
+      }
+    },
+    async saveProfile() {
+      try {
+        const response = await fetch('http://localhost:3000/users/update', {
+          method: 'PUT',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({
+            email: this.email,
+            newUsername: this.username,
+            newEmail: this.email,
+            newPassword: this.password
+          })
+        });
+
+        const result = await response.json();
+        if (response.ok) {
+          this.isEditing = false;
+          alert('Profile updated successfully');
+        } else {
+          alert(result.error || 'Failed to update profile');
+        }
+      } catch (error) {
+        console.error('Error saving profile:', error);
+        alert('Failed to update profile');
+      }
     },
     editProfile() {
       this.isEditing = !this.isEditing;
-    },
-    async saveProfile() {
-      const response = await fetch('http://localhost:3000/users/update', {
-        method: 'PUT',
-        headers: {
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify({
-          email: this.email,
-          newUsername: this.username,
-          newEmail: this.email,
-          newPassword: this.password
-        })
-      });
-
-      const result = await response.json();
-      if (response.ok) {
-        this.isEditing = false;
-        alert('Profile updated successfully');
-        // Você pode adicionar lógica para atualizar a interface ou redirecionar o usuário aqui
-      } else {
-        alert(result.error || 'Failed to update profile');
-      }
     }
   }
 };

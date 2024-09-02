@@ -1,5 +1,3 @@
-// routes/userRoutes.js
-
 const express = require('express');
 const router = express.Router();
 const userService = require('../services/userService');
@@ -41,6 +39,22 @@ router.put('/update', async (req, res) => {
     res.status(200).json(updatedUser);
   } catch (error) {
     res.status(500).json({ error: error.message });
+  }
+});
+
+// Endpoint para obter o perfil do usuário
+router.get('/profile', async (req, res) => {
+  const { email } = req.query;  // Obtém o email a partir da query string
+
+  try {
+    const userProfile = await userService.getUserProfile(email);
+    if (userProfile) {
+      res.status(200).json(userProfile);
+    } else {
+      res.status(404).json({ error: 'User not found' });
+    }
+  } catch (error) {
+    res.status(500).json({ error: 'Failed to load profile' });
   }
 });
 

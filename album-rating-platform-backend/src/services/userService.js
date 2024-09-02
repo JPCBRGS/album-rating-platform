@@ -1,5 +1,3 @@
-// services/userService.js
-
 const bcrypt = require('bcrypt');
 const { PrismaClient } = require('@prisma/client');
 const prisma = new PrismaClient();
@@ -11,8 +9,8 @@ async function createUser(username, email, password) {
   
   const newUser = await prisma.user.create({
     data: {
-      username: username,
-      email: email,
+      username,
+      email,
       password: hashedPassword
     }
   });
@@ -22,7 +20,7 @@ async function createUser(username, email, password) {
 
 async function verifyUserPassword(email, password) {
   const user = await prisma.user.findUnique({
-    where: { email: email }
+    where: { email }
   });
 
   if (user && await bcrypt.compare(password, user.password)) {
@@ -34,7 +32,7 @@ async function verifyUserPassword(email, password) {
 
 async function updateUser(email, newUsername, newEmail, newPassword) {
   const user = await prisma.user.findUnique({
-    where: { email: email }
+    where: { email }
   });
 
   if (!user) {
@@ -51,15 +49,32 @@ async function updateUser(email, newUsername, newEmail, newPassword) {
   }
 
   const updatedUser = await prisma.user.update({
-    where: { email: email },
+    where: { email },
     data: updatedData
   });
 
   return updatedUser;
 }
 
+async function getUserProfile(email) {
+  try {
+    const user = await prisma.user.findUnique({
+      where: { email },
+      select: {
+        username: true,
+        email: true
+        // outros campos que você queira retornar
+      }
+    });
+    return user;
+  } catch (error) {
+    throw new Error('Error fetching user profile');
+  }
+}
+
 module.exports = {
   createUser,
   verifyUserPassword,
-  updateUser
+  updateUser,
+  getUserProfile
 };

@@ -55,6 +55,7 @@ export default {
         const result = await response.json();
         if (response.ok) {
           localStorage.setItem('isLoggedIn', 'true');
+          localStorage.setItem('email', this.email); // Armazena o email
           this.$router.push('/main'); // Redireciona para a página principal
         } else {
           this.errorMessage = result.message || 'Login failed';
