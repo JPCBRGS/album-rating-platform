@@ -40,21 +40,21 @@ export default {
 .content {
   display: flex;
   justify-content: center;
-  margin-top: 60px; /* Ajustado para dar espaço abaixo da barra de menu */
-  align-items: center; /* Centraliza verticalmente */
-  flex-grow: 1; /* Permite que o conteúdo cresça para ocupar o espaço disponível */
+  margin-top: 40px;
+  align-items: flex-start;
+  flex-grow: 1;
 }
 
 .search-box {
   padding: 10px 20px;
   font-size: 16px;
-  border-radius: 20px; /* Torna o campo de entrada arredondado */
-  border: 2px solid #ccc; /* Dá uma borda sutil */
-  width: 50%; /* Ajuste a largura conforme necessário */
-  max-width: 600px; /* Largura máxima */
-  outline: none; /* Remove o contorno ao focar */
-  box-shadow: none; /* Remove qualquer sombra que possa parecer uma borda */
-  background: white; /* Define o fundo como branco */
+  border-radius: 20px;
+  border: 2px solid #ccc;
+  width: 50%;
+  max-width: 600px;
+  outline: none;
+  box-shadow: none;
+  background: white;
 }
 
 button {
