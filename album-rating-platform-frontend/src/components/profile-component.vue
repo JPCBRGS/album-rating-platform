@@ -1,4 +1,5 @@
 <template>
+  <menu-bar-component />
   <div class="profile-container">
     <h1>My Profile</h1>
     <div class="profile-info">
@@ -36,8 +37,13 @@
 </template>
 
 <script>
+import MenuBarComponent from './menu-bar-component.vue';
+
 export default {
   name: 'profile-component',
+  components: {
+    MenuBarComponent
+  },
   data() {
     return {
       username: '',
@@ -69,7 +75,6 @@ export default {
           const data = await response.json();
           this.username = data.username;
           this.email = data.email;
-          // Não mostre a senha real; você pode optar por mostrar a senha como asteriscos ou algo semelhante
           this.password = '********';
         } else {
           alert('Failed to load profile');
@@ -98,6 +103,7 @@ export default {
         if (response.ok) {
           this.isEditing = false;
           alert('Profile updated successfully');
+          this.$router.push('/');
         } else {
           alert(result.error || 'Failed to update profile');
         }
@@ -115,8 +121,10 @@ export default {
 
 <style scoped>
 .profile-container {
+  margin-top: 250px;
+  margin-left: auto;
+  margin-right: auto;
   max-width: 600px;
-  margin: auto;
   padding: 1rem;
   background-color: #1e1e1e;
   color: #ffffff;

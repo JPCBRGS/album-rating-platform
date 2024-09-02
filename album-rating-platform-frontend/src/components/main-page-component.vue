@@ -2,9 +2,7 @@
   <div class="main-page">
     <menu-bar-component />
     <div class="content">
-      <h1>Welcome to the Main Page!</h1>
-      <p>This is a placeholder for the main page content. Customize this component as needed.</p>
-      <button @click="logout">Logout</button>
+      <input type="text" placeholder="Search albums..." v-model="searchQuery" @keyup.enter="searchAlbums" class="search-box" />
     </div>
   </div>
 </template>
@@ -17,13 +15,16 @@ export default {
   components: {
     MenuBarComponent
   },
+  data() {
+    return {
+      searchQuery: ''
+    };
+  },
   methods: {
-    logout() {
-      // Remove a autenticação do usuário
-      localStorage.removeItem('isLoggedIn');
-      
-      // Redireciona para a página de login
-      this.$router.push('/login');
+    searchAlbums() {
+      // Implement the logic to search albums based on searchQuery
+      console.log('Searching for:', this.searchQuery);
+      // You might want to call an API to fetch the search results here
     }
   }
 }
@@ -37,9 +38,23 @@ export default {
 }
 
 .content {
-  text-align: center;
-  margin-top: 20px;
-  flex: 1;
+  display: flex;
+  justify-content: center;
+  margin-top: 60px; /* Ajustado para dar espaço abaixo da barra de menu */
+  align-items: center; /* Centraliza verticalmente */
+  flex-grow: 1; /* Permite que o conteúdo cresça para ocupar o espaço disponível */
+}
+
+.search-box {
+  padding: 10px 20px;
+  font-size: 16px;
+  border-radius: 20px; /* Torna o campo de entrada arredondado */
+  border: 2px solid #ccc; /* Dá uma borda sutil */
+  width: 50%; /* Ajuste a largura conforme necessário */
+  max-width: 600px; /* Largura máxima */
+  outline: none; /* Remove o contorno ao focar */
+  box-shadow: none; /* Remove qualquer sombra que possa parecer uma borda */
+  background: white; /* Define o fundo como branco */
 }
 
 button {

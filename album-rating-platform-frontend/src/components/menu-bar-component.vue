@@ -1,7 +1,12 @@
 <template>
   <div class="menu-bar">
-    <div class="menu-icon">
-      <i class="fas fa-bars"></i>
+    <div class="left-icons">
+      <div class="home-icon" @click="goToHome">
+        <i class="fas fa-home"></i> <!-- Ícone de casinha -->
+      </div>
+      <div class="menu-icon">
+        <i class="fas fa-bars"></i>
+      </div>
     </div>
     <div class="user-icon" @mouseenter="showDropdown" @mouseleave="hideDropdown">
       <i class="fas fa-user"></i>
@@ -36,8 +41,10 @@ export default {
       this.$router.push('/login');
     },
     goToProfile() {
-      // Redireciona para a página de perfil
       this.$router.push('/profile');
+    },
+    goToHome() {
+      this.$router.push('/main'); // Redireciona para a página principal
     }
   }
 }
@@ -46,7 +53,6 @@ export default {
 <style scoped>
 .menu-bar {
   display: flex;
-  justify-content: space-between;
   align-items: center;
   background-color: #1e1e1e; /* Cor de fundo da barra */
   padding: 0 1rem; /* Espaçamento horizontal */
@@ -59,19 +65,27 @@ export default {
   z-index: 1000; /* Garante que a barra fique acima de outros elementos */
 }
 
-.menu-icon,
-.user-icon {
+.left-icons {
+  display: flex;
+  align-items: center;
+}
+
+.home-icon,
+.menu-icon {
   font-size: 24px;
   color: #ffffff; /* Cor dos ícones */
+  cursor: pointer; /* Cursor pointer para os ícones */
 }
 
 .menu-icon {
-  cursor: pointer; /* Cursor pointer para o ícone de menu */
+  margin-left: 1rem; /* Espaçamento entre o ícone de casa e o ícone de menu */
 }
 
 .user-icon {
-  cursor: pointer; /* Cursor pointer para o ícone de usuário */
+  margin-left: auto; /* Empurra o ícone de usuário para a direita */
   font-size: 20px; /* Ajusta o tamanho do ícone de perfil */
+  color: #ffffff; /* Cor do ícone */
+  cursor: pointer; /* Cursor pointer para o ícone de usuário */
   position: relative;
 }
 
