@@ -31,9 +31,8 @@ export default {
       this.isDropdownVisible = false;
     },
     logout() {
-      // Remove a autenticação do usuário
       localStorage.removeItem('isLoggedIn');
-      // Redireciona para a página de login
+      localStorage.removeItem('email');
       this.$router.push('/login');
     },
     goToProfile() {
