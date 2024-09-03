@@ -13,8 +13,6 @@ exports.handleSpotifyCallback = async (req, res) => {
 
     if (code) {
         try {
-            console.log('Session before storing access token:', req.session);
-
             const response = await fetch('https://accounts.spotify.com/api/token', {
                 method: 'POST',
                 headers: {
@@ -30,10 +28,11 @@ exports.handleSpotifyCallback = async (req, res) => {
 
             const data = await response.json();
             if (data.access_token) {
+                // Armazena o token de acesso na sessão
                 req.session.accessToken = data.access_token;
-                console.log('Access token stored in session:', req.session.accessToken);
-                console.log('Session after storing access token:', req.session);
-                res.status(200).send('Login successful! Access token acquired.');
+
+                // Redireciona o usuário para o front-end com o token como parte da URL
+                res.redirect(`http://localhost:8080/main?access_token=${data.access_token}`);
             } else {
                 res.send('Login failed! No access token returned.');
             }
@@ -45,12 +44,16 @@ exports.handleSpotifyCallback = async (req, res) => {
         res.send('Error: No code received.');
     }
 };
-
 exports.searchAlbums = async (req, res) => {
-    console.log(req.session.accessToken);
+    const query = req.query.query; 
+    const authHeader = req.headers.authorization;
+    console.log('Cabeçalho de autorização recebido:', authHeader); // Adicione este log
 
-    const query = req.query.query; // Pega a query da URL
-    const accessToken = req.session.accessToken; // Assume que o token está armazenado na sessão
+    if (!authHeader) {
+        return res.status(401).json({ error: 'Authorization header is missing' });
+    }
+
+    const accessToken = authHeader.split(' ')[1]; 
 
     if (!accessToken) {
         return res.status(401).json({ error: 'Access Token is missing' });
@@ -61,7 +64,8 @@ exports.searchAlbums = async (req, res) => {
         const response = await fetch(url, {
             method: 'GET',
             headers: {
-                'Authorization': `Bearer ${accessToken}`
+                'Authorization': `Bearer ${accessToken}`,
+                'Content-Type': 'application/json'
             }
         });
 
@@ -70,7 +74,7 @@ exports.searchAlbums = async (req, res) => {
             throw new Error(data.error.message);
         }
 
-        res.status(200).json(data.albums.items); // Envia os álbuns encontrados de volta ao cliente
+        res.status(200).json(data.albums.items); 
     } catch (error) {
         console.error('Error searching albums:', error);
         res.status(500).json({ error: 'Failed to search albums' });
