@@ -39,53 +39,69 @@ export default {
       accessToken: localStorage.getItem('spotifyAccessToken') || null,
     };
   },
-  created() {
-    // Verifica se há um token de acesso
-    const urlParams = new URLSearchParams(window.location.search);
-    const accessTokenFromUrl = urlParams.get('access_token');
-    
-    if (accessTokenFromUrl) {
-      this.accessToken = accessTokenFromUrl;
-      localStorage.setItem('spotifyAccessToken', this.accessToken);
-      window.history.replaceState({}, document.title, "/main"); // Remove o token da URL
-    }
+    created() {
+        // Verifica se há um token de acesso
+        const accessToken = localStorage.getItem('spotifyAccessToken');
 
-    if (!this.accessToken) {
-      // Redireciona para o login do Spotify se o token não estiver presente
-      window.location.href = 'http://localhost:3000/spotify/login';
-    }
-  },
-  methods: {
-    searchAlbums() {
-      if (!this.searchQuery || !this.accessToken) return; // Não busca se o campo de pesquisa estiver vazio ou sem token
-      this.fetchAlbums(this.searchQuery);
+        if (!accessToken) {
+            this.redirectToLogin();
+            return;
+        }
+
+        // Verifica se o token é válido
+        fetch('http://localhost:3000/spotify/verify-token', {
+            method: 'GET',
+            headers: {
+                'Authorization': `Bearer ${accessToken}`,
+                'Content-Type': 'application/json'
+            }
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (!data.valid) {
+                this.redirectToLogin();
+            }
+        })
+        .catch(error => {
+            console.error('Error verifying token:', error);
+            this.redirectToLogin();
+        });
     },
-    fetchAlbums(query) {
-      const url = `http://localhost:3000/spotify/search-albums?query=${encodeURIComponent(query)}`;
-      console.log('Token sendo enviado na requisição:', this.accessToken); // Adicione este log
-      fetch(url, {
-          method: 'GET',
-          headers: {
-              'Authorization': `Bearer ${this.accessToken}`,
-              'Content-Type': 'application/json'
-          }
-      })
-      .then(response => {
-          if (!response.ok) throw new Error('Failed to fetch');
-          return response.json();
-      })
-      .then(data => {
-          this.albums = data;
-      })
-      .catch(error => {
-          console.error('Error fetching albums:', error);
-          this.albums = []; 
-      });
+    methods: {
+        redirectToLogin() {
+            // Redireciona para o login do Spotify
+            window.location.href = 'http://localhost:3000/spotify/login';
+        },
+        searchAlbums() {
+        if (!this.searchQuery || !this.accessToken) return; // Não busca se o campo de pesquisa estiver vazio ou sem token
+        this.fetchAlbums(this.searchQuery);
+        },
+        fetchAlbums(query) {
+        const url = `http://localhost:3000/spotify/search-albums?query=${encodeURIComponent(query)}`;
+        console.log('Token sendo enviado na requisição:', this.accessToken); // Adicione este log
+        fetch(url, {
+            method: 'GET',
+            headers: {
+                'Authorization': `Bearer ${this.accessToken}`,
+                'Content-Type': 'application/json'
+            }
+        })
+        .then(response => {
+            if (!response.ok) throw new Error('Failed to fetch');
+            return response.json();
+        })
+        .then(data => {
+            this.albums = data;
+        })
+        .catch(error => {
+            console.error('Error fetching albums:', error);
+            this.albums = []; 
+        });
+        },
+        debouncedSearch: _.debounce(function () {
+        this.searchAlbums();
+        }, 300), // Debounce para reduzir chamadas à API
     },
-    debouncedSearch: _.debounce(function () {
-      this.searchAlbums();
-    }, 300), // Debounce para reduzir chamadas à API
-  },
 };
 </script>
 

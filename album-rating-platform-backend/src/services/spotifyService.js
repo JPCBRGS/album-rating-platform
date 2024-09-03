@@ -28,10 +28,7 @@ exports.handleSpotifyCallback = async (req, res) => {
 
             const data = await response.json();
             if (data.access_token) {
-                // Armazena o token de acesso na sessão
-                req.session.accessToken = data.access_token;
 
-                // Redireciona o usuário para o front-end com o token como parte da URL
                 res.redirect(`http://localhost:8080/main?access_token=${data.access_token}`);
             } else {
                 res.send('Login failed! No access token returned.');
@@ -47,7 +44,6 @@ exports.handleSpotifyCallback = async (req, res) => {
 exports.searchAlbums = async (req, res) => {
     const query = req.query.query; 
     const authHeader = req.headers.authorization;
-    console.log('Cabeçalho de autorização recebido:', authHeader); // Adicione este log
 
     if (!authHeader) {
         return res.status(401).json({ error: 'Authorization header is missing' });
@@ -78,5 +74,33 @@ exports.searchAlbums = async (req, res) => {
     } catch (error) {
         console.error('Error searching albums:', error);
         res.status(500).json({ error: 'Failed to search albums' });
+    }
+};
+
+exports.verifyAccessToken = async (req, res) => {
+    const accessToken = req.headers.authorization?.split(' ')[1];
+
+    if (!accessToken) {
+        return res.status(401).json({ valid: false, error: 'Access Token is missing' });
+    }
+
+    try {
+        // Verifica o token fazendo uma chamada simples à API do Spotify (ex.: pegar informações do usuário)
+        const response = await fetch('https://api.spotify.com/v1/me', {
+            method: 'GET',
+            headers: {
+                'Authorization': `Bearer ${accessToken}`
+            }
+        });
+
+        if (response.status === 401) {
+            // Token expirado ou inválido
+            return res.status(401).json({ valid: false, error: 'Access Token expired' });
+        }
+
+        res.status(200).json({ valid: true }); // Token válido
+    } catch (error) {
+        console.error('Error verifying access token:', error);
+        res.status(500).json({ valid: false, error: 'Failed to verify token' });
     }
 };
