@@ -44,27 +44,25 @@ export default {
       this.fetchAlbums(this.searchQuery);
     },
     fetchAlbums(query) {
-      const url = `http://localhost:3000/spotify/search-albums?query=${encodeURIComponent(
-        query
-      )}`;
-      fetch(url, {
-        method: 'GET',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-      })
-        .then((response) => {
-          if (!response.ok) throw new Error('Failed to fetch');
-          return response.json();
-        })
-        .then((data) => {
-          this.albums = data; // Atualiza o array de álbuns com a resposta
-        })
-        .catch((error) => {
-          console.error('Error fetching albums:', error);
-          this.albums = []; // Limpa a lista se houver erro
-        });
-    },
+  const url = `http://localhost:3000/spotify/search-albums?query=${encodeURIComponent(query)}`;
+  fetch(url, {
+    method: 'GET',
+    headers: {
+      'Content-Type': 'application/json'
+    }
+  })
+  .then(response => {
+    if (!response.ok) throw new Error('Failed to fetch');
+    return response.json();
+  })
+  .then(data => {
+    this.albums = data;
+  })
+  .catch(error => {
+    console.error('Error fetching albums:', error);
+    this.albums = []; // Limpar lista se houver erro
+  });
+},
     debouncedSearch: _.debounce(function () {
       this.searchAlbums();
     }, 300), // Debounce para reduzir chamadas à API

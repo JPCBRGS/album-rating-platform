@@ -7,19 +7,11 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-// Enums
-enum UserType {
-  ADM
-  COM
-}
-
-// Models
 model User {
   id        Int      @id @default(autoincrement())
   username  String   @unique @db.VarChar(32)
   email     String   @unique @db.VarChar(255)
   password  String   @db.VarChar(255)
-  type      UserType @default(COM)
   createdAt DateTime @default(now()) @db.Timestamp(6)
   updatedAt DateTime @updatedAt @db.Timestamp(6)
 }
