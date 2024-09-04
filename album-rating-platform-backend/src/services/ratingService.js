@@ -32,39 +32,6 @@ exports.getAlbumRating = async (req, res) => {
     }
 };
 
-// Busca a avaliação específica do usuário para o álbum
-exports.getUserAlbumRating = async (req, res) => {
-    const { spotifyAlbumId, email } = req.params;
-
-    try {
-        // Busca o usuário pelo e-mail
-        const user = await prisma.user.findUnique({
-            where: { email },
-        });
-
-        if (!user) {
-            return res.status(404).json({ error: 'User not found' });
-        }
-
-        // Pega a avaliação do álbum para o usuário
-        const userRating = await prisma.rating.findFirst({
-            where: {
-                spotifyAlbumId: spotifyAlbumId,
-                userId: user.id,
-            },
-        });
-
-        if (!userRating) {
-            return res.json({ userRating: null });
-        }
-
-        return res.json({ userRating: userRating.rating });
-    } catch (error) {
-        console.error('Error fetching user rating:', error);
-        return res.status(500).json({ error: 'Failed to fetch user rating' });
-    }
-};
-
 exports.createOrUpdateRating = async (req, res) => {
     const { spotifyAlbumId, rating, email } = req.body;
 
