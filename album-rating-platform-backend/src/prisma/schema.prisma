@@ -14,4 +14,16 @@ model User {
   password  String   @db.VarChar(255)
   createdAt DateTime @default(now()) @db.Timestamp(6)
   updatedAt DateTime @updatedAt @db.Timestamp(6)
+
+  Rating Rating[]
+}
+
+model Rating {
+  id              Int      @id @default(autoincrement())
+  rating          Int      @default(0)
+  userId          Int
+  spotifyAlbumId  String   // ID do álbum no Spotify
+  createdAt       DateTime @default(now())
+
+  user            User     @relation(fields: [userId], references: [id])
 }

@@ -10,7 +10,12 @@
           class="search-box"
         />
         <div class="album-list">
-          <div class="album" v-for="album in displayedAlbums" :key="album.id" @click="openModal(album)">
+          <div
+            class="album"
+            v-for="album in displayedAlbums"
+            :key="album.id"
+            @click="openModal(album)"
+          >
             <img
               :src="album.images[0]?.url"
               alt="album cover"
@@ -20,20 +25,24 @@
           </div>
         </div>
       </div>
-        <AlbumModal :isOpen="isModalOpen" :album="selectedAlbum" @close="closeModal" />
+      <AlbumModal
+        :isOpen="isModalOpen"
+        :album="selectedAlbum"
+        @close="closeModal"
+      />
     </div>
   </template>
   
   <script>
   import MenuBarComponent from './menu-bar-component.vue';
-  import AlbumModal from './album-modal-component.vue'; // Importa o novo componente
+  import AlbumModal from './album-modal-component.vue'; // Importa o componente de modal
   import _ from 'lodash';
   
   export default {
     name: 'main-page-component',
     components: {
       MenuBarComponent,
-      AlbumModal // Adiciona o componente modal
+      AlbumModal, // Adiciona o componente modal
     },
     data() {
       return {
@@ -46,17 +55,18 @@
     },
     computed: {
       displayedAlbums() {
-        return this.albums.slice(0, 20);
-      }
+        return this.albums.slice(0, 20); // Limita os álbuns exibidos
+      },
     },
     created() {
+      // Verifica se há um token de acesso na URL
       const urlParams = new URLSearchParams(window.location.search);
       const accessTokenFromUrl = urlParams.get('access_token');
-      
+  
       if (accessTokenFromUrl) {
         this.accessToken = accessTokenFromUrl;
         localStorage.setItem('spotifyAccessToken', this.accessToken);
-        window.history.replaceState({}, document.title, "/main"); 
+        window.history.replaceState({}, document.title, '/main'); // Remove o token da URL
       } else {
         this.accessToken = localStorage.getItem('spotifyAccessToken');
       }
@@ -71,22 +81,22 @@
     methods: {
       verifyToken() {
         fetch('http://localhost:3000/spotify/verify-token', {
-            method: 'GET',
-            headers: {
-                'Authorization': `Bearer ${this.accessToken}`,
-                'Content-Type': 'application/json'
-            }
+          method: 'GET',
+          headers: {
+            Authorization: `Bearer ${this.accessToken}`,
+            'Content-Type': 'application/json',
+          },
         })
-        .then(response => response.json())
-        .then(data => {
+          .then((response) => response.json())
+          .then((data) => {
             if (!data.valid) {
-                this.redirectToLogin();
+              this.redirectToLogin();
             }
-        })
-        .catch(error => {
+          })
+          .catch((error) => {
             console.error('Error verifying token:', error);
             this.redirectToLogin();
-        });
+          });
       },
       redirectToLogin() {
         localStorage.removeItem('spotifyAccessToken');
@@ -97,33 +107,44 @@
         this.fetchAlbums(this.searchQuery);
       },
       fetchAlbums(query) {
-        const url = `http://localhost:3000/spotify/search-albums?query=${encodeURIComponent(query)}`;
+        const url = `http://localhost:3000/spotify/search-albums?query=${encodeURIComponent(
+          query
+        )}`;
         fetch(url, {
-            method: 'GET',
-            headers: {
-                'Authorization': `Bearer ${this.accessToken}`,
-                'Content-Type': 'application/json'
-            }
+          method: 'GET',
+          headers: {
+            Authorization: `Bearer ${this.accessToken}`,
+            'Content-Type': 'application/json',
+          },
         })
-        .then(response => {
+          .then((response) => {
             if (!response.ok) throw new Error('Failed to fetch');
             return response.json();
-        })
-        .then(data => {
+          })
+          .then((data) => {
             this.albums = data;
-        })
-        .catch(error => {
+          })
+          .catch((error) => {
             console.error('Error fetching albums:', error);
-            this.albums = []; 
-        });
+            this.albums = [];
+          });
       },
       openModal(album) {
-        this.selectedAlbum = album;
-        this.isModalOpen = true;
+        if (album) {
+          this.selectedAlbum = album;
+          this.isModalOpen = true;
+          document.addEventListener('keydown', this.handleEscape); // Adiciona evento para "Escape"
+        }
       },
       closeModal() {
         this.isModalOpen = false;
         this.selectedAlbum = null;
+        document.removeEventListener('keydown', this.handleEscape); // Remove evento para "Escape"
+      },
+      handleEscape(event) {
+        if (event.key === 'Escape') {
+          this.closeModal();
+        }
       },
       debouncedSearch: _.debounce(function () {
         this.searchAlbums();
