@@ -50,7 +50,6 @@
         this.$emit('close');
       },
       rateAlbum(rating) {
-        // Atualiza a avaliação do usuário
         this.userRating = rating;
   
         // Envia a avaliação para o back-end
@@ -81,11 +80,24 @@
           })
           .catch((error) => console.error('Error fetching album rating:', error));
       },
+      fetchUserRating() {
+        // Obtém a avaliação específica do usuário
+        const email = localStorage.getItem('email');
+        fetch(`http://localhost:3000/ratings/user-album-rating/${this.album.id}/${email}`)
+          .then((response) => response.json())
+          .then((data) => {
+            if (data.userRating) {
+              this.userRating = data.userRating; // Define a avaliação do usuário no front-end
+            }
+          })
+          .catch((error) => console.error('Error fetching user rating:', error));
+      },
     },
     watch: {
       album(newAlbum) {
         if (newAlbum) {
-          this.fetchAlbumRating();
+          this.fetchAlbumRating(); // Atualiza a avaliação média
+          this.fetchUserRating(); // Busca a avaliação do usuário
         }
       },
     },
